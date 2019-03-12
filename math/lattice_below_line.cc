@@ -54,21 +54,21 @@ using namespace std;
 // 
 using Int = long long;
 Int latticeBelowLine(Int n, Int a, Int b, Int m) {
-  Int ans = 0;
-  while (m) {
-    ans += (n-1)*n/2*(b/m) + n*(a/m); 
-    a %= m;
-    b %= m;
-    auto z = (a+b*n);
-    a = z%m;
-    n = z/m;
-    swap(b, m);
-  }
-  return ans;
+    Int ans = 0;
+    while (m) {
+        ans += (n-1)*n/2*(b/m) + n*(a/m); 
+        a %= m;
+        b %= m;
+        auto z = (a+b*n);
+        a = z%m;
+        n = z/m;
+        swap(b, m);
+    }
+    return ans;
 }
 
 int main() {
-  srand(time(0));
-  Int a = rand(), b = rand(), n = rand(), m = rand();
-  cout << latticeBelowLine(n, a, b, m) << endl;
+    srand(time(0));
+    Int a = rand(), b = rand(), n = rand(), m = rand();
+    cout << latticeBelowLine(n, a, b, m) << endl;
 }

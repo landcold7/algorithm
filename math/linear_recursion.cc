@@ -44,37 +44,37 @@ using namespace std;
 #define all(c) ((c).begin()), ((c).end())
 
 int linear_recurrence(vector<int> a, vector<int> x, int k) {
-  int n = a.size();
-  vector<int> t(2*n+1);
+    int n = a.size();
+    vector<int> t(2*n+1);
 
-  function<vector<int> (int)> rec = [&](int k) {
-    vector<int> c(n);
-    if (k < n) c[k] = 1;
-    else {
-      vector<int> b = rec(k / 2);
-      fill(all(t), 0);
-      for (int i = 0; i < n; ++i) 
-        for (int j = 0; j < n; ++j)
-          t[i+j+(k&1)] += b[i]*b[j];
-      for (int i = 2*n-1; i >= n; --i) 
-        for (int j = 0; j < n; j++) 
-          t[i-n+j] += a[j]*t[i];
-      for (int i = 0; i < n; ++i) 
-        c[i] = t[i];
-    }
-    return c;
-  };
-  vector<int> c = rec(k);
-  int ans = 0;
-  for (int i = 0; i < x.size(); ++i) 
-    ans += c[i]*x[i];
-  return ans;
+    function<vector<int> (int)> rec = [&](int k) {
+        vector<int> c(n);
+        if (k < n) c[k] = 1;
+        else {
+            vector<int> b = rec(k / 2);
+            fill(all(t), 0);
+            for (int i = 0; i < n; ++i) 
+                for (int j = 0; j < n; ++j)
+                    t[i+j+(k&1)] += b[i]*b[j];
+            for (int i = 2*n-1; i >= n; --i) 
+                for (int j = 0; j < n; j++) 
+                    t[i-n+j] += a[j]*t[i];
+            for (int i = 0; i < n; ++i) 
+                c[i] = t[i];
+        }
+        return c;
+    };
+    vector<int> c = rec(k);
+    int ans = 0;
+    for (int i = 0; i < x.size(); ++i) 
+        ans += c[i]*x[i];
+    return ans;
 }
 
 
 int main() {
-  // x[n+k] = x[n] + 2*x[n+1] + 3*x[n+2];
-  // x[0] = 6, x[1] = 5, x[2] = 4.
-  // 10-th term = 220696
-  cout << linear_recurrence({1,2,3}, {6,5,4}, 10) << endl;
+    // x[n+k] = x[n] + 2*x[n+1] + 3*x[n+2];
+    // x[0] = 6, x[1] = 5, x[2] = 4.
+    // 10-th term = 220696
+    cout << linear_recurrence({1,2,3}, {6,5,4}, 10) << endl;
 }

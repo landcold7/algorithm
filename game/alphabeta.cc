@@ -37,119 +37,119 @@ using namespace std;
 
 const int w = 3, n = 9;
 struct state {
-  int p, T[n];
+    int p, T[n];
 
-  state() { 
-    p = +1;
-    for (int i = 0; i < 9; ++i)
-      T[i] = 0;
-  }
+    state() { 
+        p = +1;
+        for (int i = 0; i < 9; ++i)
+            T[i] = 0;
+    }
 
-  // must implement.
-  // return the board status (finished or not)
-  // and set board score into score variable
-  // (player p win  ==> positive
-  //           lose ==> negative )
-  int score;
-  bool finished() {
-    const vector<vector<int>> lines = {
-      {0,1,2},{3,4,5},{6,7,8},
-      {0,3,6},{1,4,7},{2,5,8},
-      {0,4,8},{2,4,6}
-    };
-    score = n;
-    for (int i = 0; i < n; ++i) 
-      if (T[i] != 0) --score;
-    if (score == 0) return true;
-    for (int i = 0; i < lines.size(); ++i) {
-      bool same = true;
-      for (int j = 1; j < lines[i].size(); ++j) 
-        if (T[lines[i][0]] != T[lines[i][j]]) same = false;
-      if (same && T[lines[i][0]]) {
-        score += 100; if (T[lines[i][0]] != p) score *= -1;
+    // must implement.
+    // return the board status (finished or not)
+    // and set board score into score variable
+    // (player p win  ==> positive
+    //           lose ==> negative )
+    int score;
+    bool finished() {
+        const vector<vector<int>> lines = {
+            {0,1,2},{3,4,5},{6,7,8},
+            {0,3,6},{1,4,7},{2,5,8},
+            {0,4,8},{2,4,6}
+        };
+        score = n;
+        for (int i = 0; i < n; ++i) 
+            if (T[i] != 0) --score;
+        if (score == 0) return true;
+        for (int i = 0; i < lines.size(); ++i) {
+            bool same = true;
+            for (int j = 1; j < lines[i].size(); ++j) 
+                if (T[lines[i][0]] != T[lines[i][j]]) same = false;
+            if (same && T[lines[i][0]]) {
+                score += 100; if (T[lines[i][0]] != p) score *= -1;
+                return true;
+            }
+        }
+        return false;
+    }
+    void disp() {
+        for (int i = 0; i < 3; ++i) {
+            for (int j = 0; j < 3; ++j) {
+                printf("%c ", T[3*i+j] > 0 ? 'o' : T[3*i+j] < 0 ? 'x' : '.');
+            }
+            printf("\n");
+        }
+    }
+    // must implement
+    bool operator == (const state &s) const {
+        for (int i = 0; i < 9; ++i) 
+            if (T[i] != s.T[i]) return false;
         return true;
-      }
     }
-    return false;
-  }
-  void disp() {
-    for (int i = 0; i < 3; ++i) {
-      for (int j = 0; j < 3; ++j) {
-        printf("%c ", T[3*i+j] > 0 ? 'o' : T[3*i+j] < 0 ? 'x' : '.');
-      }
-      printf("\n");
-    }
-  }
-  // must implement
-  bool operator == (const state &s) const {
-    for (int i = 0; i < 9; ++i) 
-      if (T[i] != s.T[i]) return false;
-    return true;
-  }
 };
 // must implement
 namespace std {
-  template <>
-  struct hash<state> {
-    size_t operator()(const state &s) const {
-      size_t h = 0;
-      for (int i = 0; i < 9; ++i) 
-        h = 4 * h + (s.T[i] + 1);
-      return h;
-    }
-  };
+    template <>
+    struct hash<state> {
+        size_t operator()(const state &s) const {
+            size_t h = 0;
+            for (int i = 0; i < 9; ++i) 
+                h = 4 * h + (s.T[i] + 1);
+            return h;
+        }
+    };
 };
 
 const int INF = 99999999;
 unordered_map<state, int> cache;
 pair<int, int> alphabeta(state s, int alpha, int beta) {
-  int move = -1;
-  if (s.finished()) return {s.score, move};
-  int low = (cache.count(s) ? cache[s] : -INF);
+    int move = -1;
+    if (s.finished()) return {s.score, move};
+    int low = (cache.count(s) ? cache[s] : -INF);
 
-  for (int k = 0; k < 9; ++k) {
-    if (s.T[k]) continue;
-    s.T[k] = s.p; s.p = -s.p;
-    auto ans = alphabeta(s, -beta, -max(alpha,low));
-    s.T[k] = 0; s.p = -s.p;
-    if (low <= -ans.fst) {
-      low = -ans.fst;
-      move = k;
+    for (int k = 0; k < 9; ++k) {
+        if (s.T[k]) continue;
+        s.T[k] = s.p; s.p = -s.p;
+        auto ans = alphabeta(s, -beta, -max(alpha,low));
+        s.T[k] = 0; s.p = -s.p;
+        if (low <= -ans.fst) {
+            low = -ans.fst;
+            move = k;
+        }
+        if (low >= beta) break;
     }
-    if (low >= beta) break;
-  }
-  return {cache[s] = low, move};
+    return {cache[s] = low, move};
 }
 
 
 int main() {
-  state s;
-  alphabeta(s, -INF, INF);
-  cout << cache.size() << endl;
+    state s;
+    alphabeta(s, -INF, INF);
+    cout << cache.size() << endl;
 
-  int player = +1;
-  while (1) {
-    s.disp();
-    if (s.finished()) {
-      if (s.score == 0) cout << "game is draw" << endl;
-      else {
-        if (s.p > 0) cout << "player +1 " << (s.score > 0 ? "win" : "lose") << endl;
-        else         cout << "player -1 " << (s.score < 0 ? "lose" : "win") << endl;
-      }
-      break;
+    int player = +1;
+    while (1) {
+        s.disp();
+        if (s.finished()) {
+            if (s.score == 0) cout << "game is draw" << endl;
+            else {
+                if (s.p > 0) cout << "player +1 " << (s.score > 0 ? "win" : "lose") << endl;
+                else         cout << "player -1 " << (s.score < 0 ? "lose" : "win") << endl;
+            }
+            break;
+        }
+        if (s.p == player) {
+            int k; 
+            while (1) {
+                cin >> k;
+                if (s.T[k] == 0) break;
+            }
+            s.T[k] = s.p; s.p = -s.p;
+        } else {
+            auto ans = alphabeta(s, -INF, INF);
+            cout << ans.fst << endl;
+            int k = ans.snd;
+            s.T[k] = s.p; s.p = -s.p;
+        }
     }
-    if (s.p == player) {
-      int k; 
-      while (1) {
-        cin >> k;
-        if (s.T[k] == 0) break;
-      }
-      s.T[k] = s.p; s.p = -s.p;
-    } else {
-      auto ans = alphabeta(s, -INF, INF);
-      cout << ans.fst << endl;
-      int k = ans.snd;
-      s.T[k] = s.p; s.p = -s.p;
-    }
-  }
 }

@@ -43,31 +43,31 @@ typedef long long ll;
 typedef vector<ll> vec;
 typedef vector<vec> mat;
 ll permanent(mat A) {
-  int n = A.size();
-  vector<ll> a(n);   // row sum
-  vector<int> io(n); // included or not 
-  ll perm = 0;
-  for (int i = 1; i < (1<<n); ++i) { 
-    int k = __builtin_ffs(i) - 1; // = least significant bit
-    ll dir = (io[k] ^= 1) ? +1 : -1;
-    ll term = ((n - i) & 1 ? -1 : 1);
-    for (int j = 0; j < n; ++j) {
-      a[j] += dir * A[k][j];
-      term *= a[j];
+    int n = A.size();
+    vector<ll> a(n);   // row sum
+    vector<int> io(n); // included or not 
+    ll perm = 0;
+    for (int i = 1; i < (1<<n); ++i) { 
+        int k = __builtin_ffs(i) - 1; // = least significant bit
+        ll dir = (io[k] ^= 1) ? +1 : -1;
+        ll term = ((n - i) & 1 ? -1 : 1);
+        for (int j = 0; j < n; ++j) {
+            a[j] += dir * A[k][j];
+            term *= a[j];
+        }
+        perm += term;
     }
-    perm += term;
-  }
-  return perm;
+    return perm;
 }
 
 int main() {
-  int ncase = 0; scanf("%d", &ncase);
-  for (int icase = 0; icase < ncase; ++icase) {
-    int n; scanf("%d", &n);
-    mat A(n, vec(n));
-    for (int i = 0; i < n; ++i) 
-      for (int j = 0; j < n; ++j) 
-        scanf("%lld", &A[i][j]);
-    printf("%lld\n", permanent(A));
-  }
+    int ncase = 0; scanf("%d", &ncase);
+    for (int icase = 0; icase < ncase; ++icase) {
+        int n; scanf("%d", &n);
+        mat A(n, vec(n));
+        for (int i = 0; i < n; ++i) 
+            for (int j = 0; j < n; ++j) 
+                scanf("%lld", &A[i][j]);
+        printf("%lld\n", permanent(A));
+    }
 }

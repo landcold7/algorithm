@@ -34,38 +34,38 @@ using namespace std;
 #define all(c) ((c).begin()), ((c).end())
 
 bool is_graphic(vector<int> d) {
-  int n = d.size();
-  sort(all(d), greater<int>());
-  vector<int> s(n+1);
-  for (int i = 0; i < n; ++i) s[i+1] = s[i] + d[i];
-  if (s[n] % 2) return false;
-  for (int k = 1; k <= n; ++k) {
-    int p = distance(d.begin(), 
-        lower_bound(d.begin()+k, d.end(), k, greater<int>()));
-    if (s[k] > k * (p-1) + s[n] - s[p]) return false;
-  }
-  return true;
+    int n = d.size();
+    sort(all(d), greater<int>());
+    vector<int> s(n+1);
+    for (int i = 0; i < n; ++i) s[i+1] = s[i] + d[i];
+    if (s[n] % 2) return false;
+    for (int k = 1; k <= n; ++k) {
+        int p = distance(d.begin(), 
+                lower_bound(d.begin()+k, d.end(), k, greater<int>()));
+        if (s[k] > k * (p-1) + s[n] - s[p]) return false;
+    }
+    return true;
 }
 
 // UVA 10720: Graph Construction
 /*
 int main() {
-  int ncase; scanf("%d", &ncase);
-  for (int icase = 0; icase < ncase; ++icase) {
-    int n; scanf("%d", &n);
-    vector<int> d(n);
-    for (int i = 0; i < n; ++i)
-      scanf("%d", &d[i]);
-    printf("%s\n", (is_graphic(d) ? "Yes" : "No"));
-  }
+    int ncase; scanf("%d", &ncase);
+    for (int icase = 0; icase < ncase; ++icase) {
+        int n; scanf("%d", &n);
+        vector<int> d(n);
+        for (int i = 0; i < n; ++i)
+            scanf("%d", &d[i]);
+        printf("%s\n", (is_graphic(d) ? "Yes" : "No"));
+    }
 }
 */
 int main() {
-  for (int n; scanf("%d", &n); ) {
-    if (n == 0) break;
-    vector<int> d(n);
-    for (int i = 0; i < n; ++i)
-      scanf("%d", &d[i]);
-    printf("%s\n", (is_graphic(d) ? "Possible" : "Not possible"));
-  }
+    for (int n; scanf("%d", &n); ) {
+        if (n == 0) break;
+        vector<int> d(n);
+        for (int i = 0; i < n; ++i)
+            scanf("%d", &d[i]);
+        printf("%s\n", (is_graphic(d) ? "Possible" : "Not possible"));
+    }
 }

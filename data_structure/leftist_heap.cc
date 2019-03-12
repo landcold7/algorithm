@@ -23,23 +23,23 @@ using namespace std;
 
 template <class T>
 struct LeftistHeap {
-  struct Node {
-    T key;
-    Node *left = 0, *right = 0;
-    int dist = 0;
-  } *root = 0;
-  static Node *merge(Node *x, Node *y) {
-    if (!x) return y;
-    if (!y) return x;
-    if (x->key > y->key) swap(x, y);
-    x->right = merge(x->right, y);
-    if (!x->left || x->left->dist < x->dist) swap(x->left, x->right);
-    x->dist = (x->right ? x->right->dist : 0) + 1;
-    return x;
-  }
-  void push(T key) { root = merge(root, new Node({key})); }
-  void pop() { root = merge(root->left, root->right); }
-  T top() { return root->key; }
+    struct Node {
+        T key;
+        Node *left = 0, *right = 0;
+        int dist = 0;
+    } *root = 0;
+    static Node *merge(Node *x, Node *y) {
+        if (!x) return y;
+        if (!y) return x;
+        if (x->key > y->key) swap(x, y);
+        x->right = merge(x->right, y);
+        if (!x->left || x->left->dist < x->dist) swap(x->left, x->right);
+        x->dist = (x->right ? x->right->dist : 0) + 1;
+        return x;
+    }
+    void push(T key) { root = merge(root, new Node({key})); }
+    void pop() { root = merge(root->left, root->right); }
+    T top() { return root->key; }
 };
 
 //
@@ -47,38 +47,38 @@ struct LeftistHeap {
 //
 template <class T>
 struct PersistentLeftistHeap {
-  struct Node {
-    T key;
-    Node *left = 0, *right = 0;
-    int dist = 0;
-  } *root = 0;
-  static Node *merge(Node *x, Node *y) {
-    if (!x) return y;
-    if (!y) return x;
-    if (x->key > y->key) swap(x, y);
-    x = new Node(*x);
-    x->right = merge(x->right, y);
-    if (!x->left || x->left->dist < x->dist) swap(x->left, x->right);
-    x->dist = (x->right ? x->right->dist : 0) + 1;
-    return x;
-  }
-  void push(T key) { root = merge(root, new Node({key})); }
-  void pop() { root = merge(root->left, root->right); }
-  T top() { return root->key; }
+    struct Node {
+        T key;
+        Node *left = 0, *right = 0;
+        int dist = 0;
+    } *root = 0;
+    static Node *merge(Node *x, Node *y) {
+        if (!x) return y;
+        if (!y) return x;
+        if (x->key > y->key) swap(x, y);
+        x = new Node(*x);
+        x->right = merge(x->right, y);
+        if (!x->left || x->left->dist < x->dist) swap(x->left, x->right);
+        x->dist = (x->right ? x->right->dist : 0) + 1;
+        return x;
+    }
+    void push(T key) { root = merge(root, new Node({key})); }
+    void pop() { root = merge(root->left, root->right); }
+    T top() { return root->key; }
 };
 
 int main() {
-  PersistentLeftistHeap<int> heap;
-  heap.push(3);
-  heap.push(1);
-  heap.push(4);
-  heap.push(1);
-  heap.push(5);
-  cout << heap.top() << endl; heap.pop();
-  cout << heap.top() << endl; heap.pop();
-  auto temp = heap;
-  cout << heap.top() << endl; heap.pop();
-  cout << heap.top() << endl; heap.pop();
-  cout << temp.top() << endl; temp.pop();
-  cout << temp.top() << endl; temp.pop();
+    PersistentLeftistHeap<int> heap;
+    heap.push(3);
+    heap.push(1);
+    heap.push(4);
+    heap.push(1);
+    heap.push(5);
+    cout << heap.top() << endl; heap.pop();
+    cout << heap.top() << endl; heap.pop();
+    auto temp = heap;
+    cout << heap.top() << endl; heap.pop();
+    cout << heap.top() << endl; heap.pop();
+    cout << temp.top() << endl; temp.pop();
+    cout << temp.top() << endl; temp.pop();
 }

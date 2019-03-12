@@ -42,108 +42,108 @@ using Int = __int128_t;
 // Point Query, Range Update 
 template <class T>
 struct FenwickTree {
-  vector<T> x;
-  FenwickTree(int n) : x(n) { }
-  void add(int k, T a) { // aux
-    for (; k < x.size(); k |= k+1) x[k] += a;
-  }
-  void add(int i, int j, T a) { // add x[k] += a for all k in [i,j]
-    add(i, a);
-    if (j+1 < x.size()) add(j+1, -a);
-  }
-  T get(int k) { // return x[k]
-    T sum = 0;
-    for (; k >= 0; k = (k&(k+1))-1) sum += x[k];
-    return sum;
-  }
+    vector<T> x;
+    FenwickTree(int n) : x(n) { }
+    void add(int k, T a) { // aux
+        for (; k < x.size(); k |= k+1) x[k] += a;
+    }
+    void add(int i, int j, T a) { // add x[k] += a for all k in [i,j]
+        add(i, a);
+        if (j+1 < x.size()) add(j+1, -a);
+    }
+    T get(int k) { // return x[k]
+        T sum = 0;
+        for (; k >= 0; k = (k&(k+1))-1) sum += x[k];
+        return sum;
+    }
 };
 
 template <class Update, class Cond>
 vector<int> parallelBinarySearch(
-  int n, int lo, int hi, Update update, Cond cond) {
-  using It = vector<int>::iterator;
-  vector<int> agents(n), solution(n, lo);
-  iota(all(agents), 0);
+    int n, int lo, int hi, Update update, Cond cond) {
+    using It = vector<int>::iterator;
+    vector<int> agents(n), solution(n, lo);
+    iota(all(agents), 0);
 
-  It begin = agents.begin(), end = agents.end();
-  deque<tuple<int,int,It,It>> stack = {make_tuple(lo, hi, begin, end)};
-  while (!stack.empty()) {
-    // invariant: elems in [begin, end) satisfy "!cond(lo) and cond(hi)"
-    tie(lo, hi, begin, end) = stack.back();
-    stack.pop_back();
+    It begin = agents.begin(), end = agents.end();
+    deque<tuple<int,int,It,It>> stack = {make_tuple(lo, hi, begin, end)};
+    while (!stack.empty()) {
+        // invariant: elems in [begin, end) satisfy "!cond(lo) and cond(hi)"
+        tie(lo, hi, begin, end) = stack.back();
+        stack.pop_back();
 
-    if (begin == end) continue;
-    if (lo+1 == hi) {
-      for_each(begin, end, [&](int k) { solution[k] = hi; });
-      continue;
+        if (begin == end) continue;
+        if (lo+1 == hi) {
+            for_each(begin, end, [&](int k) { solution[k] = hi; });
+            continue;
+        }
+        int mi = (lo + hi) / 2;
+        update(mi);
+        It mid = partition(begin, end, [&](int k) { return cond(k); });
+        stack.push_back(make_tuple(mi, hi, mid, end));
+        stack.push_back(make_tuple(lo, mi, begin, mid));
     }
-    int mi = (lo + hi) / 2;
-    update(mi);
-    It mid = partition(begin, end, [&](int k) { return cond(k); });
-    stack.push_back(make_tuple(mi, hi, mid, end));
-    stack.push_back(make_tuple(lo, mi, begin, mid));
-  }
-  return solution;
+    return solution;
 }
 
 void SPOJ_METEORS() {
-  int n, m, k;
-  scanf("%d %d", &n, &m);
-  vector<vector<int>> S(n); 
-  vector<Int> p(n);
-  for (int i = 0; i < m; ++i) {
-    int j; scanf("%d", &j);
-    S[j-1].push_back(i);
-  }
-  for (int i = 0; i < n; ++i)
-    scanf("%lld", &p[i]);
-  scanf("%d", &k);
-  vector<int> l(k), r(k);
-  vector<Int> a(k);
-  for (int i = 0; i < k; ++i) {
-    scanf("%d %d %lld", &l[i], &r[i], &a[i]);
-    --l[i]; --r[i];
-  }
-
-  FenwickTree<Int> FT(m);
-  int curr = -1; 
-  auto update = [&](int time) {
-    while (curr < time) {
-      ++curr;
-      if (l[curr] <= r[curr]) {
-        FT.add(l[curr], r[curr], a[curr]);
-      } else {
-        FT.add(l[curr], m-1, a[curr]);
-        FT.add(0, r[curr], a[curr]);
-      }
+    int n, m, k;
+    scanf("%d %d", &n, &m);
+    vector<vector<int>> S(n); 
+    vector<Int> p(n);
+    for (int i = 0; i < m; ++i) {
+        int j; scanf("%d", &j);
+        S[j-1].push_back(i);
     }
-    while (curr > time) {
-      if (l[curr] <= r[curr]) {
-        FT.add(l[curr], r[curr], -a[curr]);
-      } else {
-        FT.add(l[curr], m-1, -a[curr]);
-        FT.add(0, r[curr], -a[curr]);
-      }
-      --curr;
+    for (int i = 0; i < n; ++i)
+        scanf("%lld", &p[i]);
+    scanf("%d", &k);
+    vector<int> l(k), r(k);
+    vector<Int> a(k);
+    for (int i = 0; i < k; ++i) {
+        scanf("%d %d %lld", &l[i], &r[i], &a[i]);
+        --l[i]; --r[i];
     }
-  };
-  // minimum time such that cond = true.
-  auto cond = [&](int j) {
-    Int total = 0;
-    for (int i: S[j]) {
-      total += FT.get(i);
+
+    FenwickTree<Int> FT(m);
+    int curr = -1; 
+    auto update = [&](int time) {
+        while (curr < time) {
+            ++curr;
+            if (l[curr] <= r[curr]) {
+                FT.add(l[curr], r[curr], a[curr]);
+            } else {
+                FT.add(l[curr], m-1, a[curr]);
+                FT.add(0, r[curr], a[curr]);
+            }
+        }
+        while (curr > time) {
+            if (l[curr] <= r[curr]) {
+                FT.add(l[curr], r[curr], -a[curr]);
+            } else {
+                FT.add(l[curr], m-1, -a[curr]);
+                FT.add(0, r[curr], -a[curr]);
+            }
+            --curr;
+        }
+    };
+    // minimum time such that cond = true.
+    auto cond = [&](int j) {
+        Int total = 0;
+        for (int i: S[j]) {
+            total += FT.get(i);
+        }
+        return total >= p[j];
+    };
+
+    auto solution = parallelBinarySearch(n, -1, k, update, cond);
+
+    for (int i = 0; i < n; ++i) {
+        if (solution[i] >= k) cout << "NIE" << endl;
+        else cout << 1+solution[i] << endl;
     }
-    return total >= p[j];
-  };
-
-  auto solution = parallelBinarySearch(n, -1, k, update, cond);
-
-  for (int i = 0; i < n; ++i) {
-    if (solution[i] >= k) cout << "NIE" << endl;
-    else cout << 1+solution[i] << endl;
-  }
 }
 
 int main() {
-  SPOJ_METEORS();
+    SPOJ_METEORS();
 }

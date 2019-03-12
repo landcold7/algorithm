@@ -50,44 +50,44 @@ using namespace std;
 typedef long long ll;
 
 ll index_perm(vector<int> x) {
-  ll r = 0;
-  vector<int> a(x.size()+1);
-  for (int i = 0; i < x.size(); ++i) {
-    int s = x[i];
-    for (int k = x[i]; k > 0; k &= k-1) s -= a[k];
-    r = (x.size() - i) * r + s;
-    for (int k = x[i]+1; k < x.size(); k += k&-k) ++a[k];
-  }
-  return r;
+    ll r = 0;
+    vector<int> a(x.size()+1);
+    for (int i = 0; i < x.size(); ++i) {
+        int s = x[i];
+        for (int k = x[i]; k > 0; k &= k-1) s -= a[k];
+        r = (x.size() - i) * r + s;
+        for (int k = x[i]+1; k < x.size(); k += k&-k) ++a[k];
+    }
+    return r;
 }
 vector<int> unindex_perm(ll r, int n) {
-  vector<int> d(n), x(n, n);
-  for (int i = n-1; i >= 0; --i) {
-    d[i] = r % (n - i); r /= (n - i);
-  }
-  vector<int> a(n+1);
-  for (int k = 1; k <= n; ++k) a[k] = k & -k;
-  for (int i = 0; i < n; ++i) {
-    for (int s: {1,2,4,8,16}) x[i] |= (x[i] >> s); 
-    for (int p = ++x[i]; p > 0; p >>= 1, x[i] |= p)
-      if (x[i] <= n && a[x[i]] <= d[i]) d[i] -= a[x[i]]; else x[i] ^= p;
-    for (int k = x[i]+1; k < x.size(); k += k&-k) --a[k];
-  }
-  return x;
+    vector<int> d(n), x(n, n);
+    for (int i = n-1; i >= 0; --i) {
+        d[i] = r % (n - i); r /= (n - i);
+    }
+    vector<int> a(n+1);
+    for (int k = 1; k <= n; ++k) a[k] = k & -k;
+    for (int i = 0; i < n; ++i) {
+        for (int s: {1,2,4,8,16}) x[i] |= (x[i] >> s); 
+        for (int p = ++x[i]; p > 0; p >>= 1, x[i] |= p)
+            if (x[i] <= n && a[x[i]] <= d[i]) d[i] -= a[x[i]]; else x[i] ^= p;
+        for (int k = x[i]+1; k < x.size(); k += k&-k) --a[k];
+    }
+    return x;
 }
 
 int main() {
-  int n = 20;
-  vector<int> x(n);
-  iota(all(x), 0);
-  for (int i = 0; i < 100; ++i) {
-    random_shuffle(all(x));
-    ll r = index_perm(x);
-    auto a = unindex_perm(r, n);
-    for (int i = 0; i < n; ++i) {
-      if (a[i] != x[i]) {
-        printf("wrong\n");
-      }
+    int n = 20;
+    vector<int> x(n);
+    iota(all(x), 0);
+    for (int i = 0; i < 100; ++i) {
+        random_shuffle(all(x));
+        ll r = index_perm(x);
+        auto a = unindex_perm(r, n);
+        for (int i = 0; i < n; ++i) {
+            if (a[i] != x[i]) {
+                printf("wrong\n");
+            }
+        }
     }
-  }
 }

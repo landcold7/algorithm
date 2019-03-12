@@ -24,28 +24,28 @@
 using namespace std;
 
 string infix_to_postfix(string s) {
-  s += '_'; // terminal symbol
-  stringstream ss;
-  vector<char> op = {'_'};
-  auto rank = [](char c) { return string("(^/*-+)").find(c); };
-  for (char c: s) {
-    if (isalnum(c)) ss << c; 
-    else {
-      for (; op.back() != '('; op.pop_back()) {
-        if (rank(op.back()) >= rank(c)) break;
-        ss << op.back();
-      }
-      if (c == ')') op.pop_back();
-      else          op.push_back(c);
+    s += '_'; // terminal symbol
+    stringstream ss;
+    vector<char> op = {'_'};
+    auto rank = [](char c) { return string("(^/*-+)").find(c); };
+    for (char c: s) {
+        if (isalnum(c)) ss << c; 
+        else {
+            for (; op.back() != '('; op.pop_back()) {
+                if (rank(op.back()) >= rank(c)) break;
+                ss << op.back();
+            }
+            if (c == ')') op.pop_back();
+            else          op.push_back(c);
+        }
     }
-  }
-  return ss.str();
+    return ss.str();
 }
 
 int main() {
-  int ncase; scanf("%d", &ncase);
-  for (int icase = 0; icase < ncase; ++icase) {
-    char s[1024]; scanf("%s", s);
-    printf("%s\n", infix_to_postfix(s).c_str());
-  }
+    int ncase; scanf("%d", &ncase);
+    for (int icase = 0; icase < ncase; ++icase) {
+        char s[1024]; scanf("%s", s);
+        printf("%s\n", infix_to_postfix(s).c_str());
+    }
 }

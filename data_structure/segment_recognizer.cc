@@ -35,115 +35,115 @@ using namespace std;
 // === tick a time ===
 #include <ctime>
 double tick() {
-  static clock_t oldtick;
-  clock_t newtick = clock();
-  double diff = 1.0*(newtick - oldtick) / CLOCKS_PER_SEC;
-  oldtick = newtick;
-  return diff;
+    static clock_t oldtick;
+    clock_t newtick = clock();
+    double diff = 1.0*(newtick - oldtick) / CLOCKS_PER_SEC;
+    oldtick = newtick;
+    return diff;
 }
 
 template <int MOD>
 struct ModuloAutomaton {
-  const int init = 0;
-  int size() const { return MOD; }
-  int next(int s, int d) const { return (s+d)%MOD; }
-  int accept(int s) const { return s==0; }
+    const int init = 0;
+    int size() const { return MOD; }
+    int next(int s, int d) const { return (s+d)%MOD; }
+    int accept(int s) const { return s==0; }
 };
 
 // 0: free
 // 1: selected
 // 2: bottom
 struct IndependenceAutomaton {
-  const int init = 0;
-  int size() const { return 3; }
-  int next(int s, int d) const { 
-    if (s == 0) return d;
-    if (s == 1) return 2*d;
-    if (s == 2) return s;
-  }
-  int accept(int s) const { return s!=2; }
+    const int init = 0;
+    int size() const { return 3; }
+    int next(int s, int d) const { 
+        if (s == 0) return d;
+        if (s == 1) return 2*d;
+        if (s == 2) return s;
+    }
+    int accept(int s) const { return s!=2; }
 };
 
 template <class Automaton>
 struct SegmentRecognizer {
-  Automaton M;
-  vector<int> x;
+    Automaton M;
+    vector<int> x;
 
-  struct Tape {
-    int begin;
-    vector<int> sequence;
-  };
-  vector<vector<int>> index;
-  vector<Tape> tapes;
+    struct Tape {
+        int begin;
+        vector<int> sequence;
+    };
+    vector<vector<int>> index;
+    vector<Tape> tapes;
 
-  SegmentRecognizer(Automaton M, vector<int> x) : M(M), x(x) { 
-    index.assign(x.size()+1, vector<int>(M.size()));
-    vector<int> stripe;
-    for (int r = 0; r < M.size(); ++r) {
-      stripe.push_back(r);
-      index[0][r] = stripe[r];
-      tapes.push_back({0, {r}});
-    }
-    for (int i = 0; i < x.size(); ++i) {
-      unordered_set<int> available;
-      for (int s = 0; s < M.size(); ++s)
-        available.insert(s);
-      vector<int> reallocate;
-      for (int r = 0; r < M.size(); ++r) {
-        int next = M.next(tapes[stripe[r]].sequence.back(), x[i]);
-        if (available.count(next)) {
-          available.erase(next);
-          index[i+1][next] = stripe[r];
-          tapes[stripe[r]].sequence.push_back(next);
-        } else {
-          reallocate.push_back(r);
+    SegmentRecognizer(Automaton M, vector<int> x) : M(M), x(x) { 
+        index.assign(x.size()+1, vector<int>(M.size()));
+        vector<int> stripe;
+        for (int r = 0; r < M.size(); ++r) {
+            stripe.push_back(r);
+            index[0][r] = stripe[r];
+            tapes.push_back({0, {r}});
         }
-      }
-      for (int r: reallocate) {
-        int s = *available.begin();
-        stripe[r] = tapes.size();
-        index[i+1][s] = stripe[r];
-        tapes.push_back({i+1, {s}});
-        available.erase(s);
-      }
+        for (int i = 0; i < x.size(); ++i) {
+            unordered_set<int> available;
+            for (int s = 0; s < M.size(); ++s)
+                available.insert(s);
+            vector<int> reallocate;
+            for (int r = 0; r < M.size(); ++r) {
+                int next = M.next(tapes[stripe[r]].sequence.back(), x[i]);
+                if (available.count(next)) {
+                    available.erase(next);
+                    index[i+1][next] = stripe[r];
+                    tapes[stripe[r]].sequence.push_back(next);
+                } else {
+                    reallocate.push_back(r);
+                }
+            }
+            for (int r: reallocate) {
+                int s = *available.begin();
+                stripe[r] = tapes.size();
+                index[i+1][s] = stripe[r];
+                tapes.push_back({i+1, {s}});
+                available.erase(s);
+            }
+        }
     }
-  }
 
-  int getState(int i, int s, int j) {
-    while (1) {
-      auto &tape = tapes[index[i][s]];
-      if (j - tape.begin < tape.sequence.size()) {
-        return tape.sequence[j - tape.begin];
-      } else {
-        i = tape.begin + tape.sequence.size();
-        s = M.next(tape.sequence.back(), x[i-1]);
-      }
+    int getState(int i, int s, int j) {
+        while (1) {
+            auto &tape = tapes[index[i][s]];
+            if (j - tape.begin < tape.sequence.size()) {
+                return tape.sequence[j - tape.begin];
+            } else {
+                i = tape.begin + tape.sequence.size();
+                s = M.next(tape.sequence.back(), x[i-1]);
+            }
+        }
     }
-  }
 };
 template <class Automaton>
 SegmentRecognizer<Automaton> makeSegmentRecognizer(Automaton M, vector<int> s) {
-  return SegmentRecognizer<Automaton>(M, s);
+    return SegmentRecognizer<Automaton>(M, s);
 }
 
 int main() {
-  IndependenceAutomaton M;
+    IndependenceAutomaton M;
 
-  for (int n = 2; n < (1<<24); n*=2) {
-    vector<int> x(n);
-    for (int i = 0; i < n; ++i) {
-      x[i] = (rand() % 10 == 0);
-    }
-    auto recognizer = makeSegmentRecognizer(M, x);
+    for (int n = 2; n < (1<<24); n*=2) {
+        vector<int> x(n);
+        for (int i = 0; i < n; ++i) {
+            x[i] = (rand() % 10 == 0);
+        }
+        auto recognizer = makeSegmentRecognizer(M, x);
 
-    tick();
-    int count = 0;
-    for (int iter = 0; iter < n; ++iter) {
-      int v = (rand() % n) + 1;
-      int u = rand() % v;
-      count += recognizer.getState(u, 0, v);
+        tick();
+        int count = 0;
+        for (int iter = 0; iter < n; ++iter) {
+            int v = (rand() % n) + 1;
+            int u = rand() % v;
+            count += recognizer.getState(u, 0, v);
+        }
+        double t = tick();
+        cout << n << " " << t / n << endl;
     }
-    double t = tick();
-    cout << n << " " << t / n << endl;
-  }
 }

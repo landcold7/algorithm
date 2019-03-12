@@ -22,17 +22,17 @@ using namespace std;
  
 template <class It>
 bool next_radix(It begin, It end, int base) {
-  for (It cur = begin; cur != end; ++cur) {
-    if ((*cur += 1) >= base) *cur = 0;
-    else return true;
-  }
-  return false;
+    for (It cur = begin; cur != end; ++cur) {
+        if ((*cur += 1) >= base) *cur = 0;
+        else return true;
+    }
+    return false;
 }
 
 int main() {
-  vector<int> a(3, 0);
-  do {
-    for (int i = 0; i < 3; ++i) cout << a[i];
-    cout << endl;
-  } while (next_radix(all(a), 2));
+    vector<int> a(3, 0);
+    do {
+        for (int i = 0; i < 3; ++i) cout << a[i];
+        cout << endl;
+    } while (next_radix(all(a), 2));
 }

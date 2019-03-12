@@ -46,117 +46,117 @@ using namespace std;
 
 
 struct graph {
-  vector<pair<int, int>> edges;
-  void add_edge(int u, int v) { 
-    edges.push_back({u, v});
-  }
-  int n;
-  vector<vector<int>> adj;
-  void make_graph() {
-    n = 0;
-    for (auto e: edges) 
-      n = max(n, max(e.fst, e.snd)+1);
-    adj.resize(n);
-    for (auto e: edges) {
-      adj[e.fst].push_back(e.snd);
-      adj[e.snd].push_back(e.fst);
+    vector<pair<int, int>> edges;
+    void add_edge(int u, int v) { 
+        edges.push_back({u, v});
     }
-    for (auto &nbh: adj) {
-      sort(nbh.begin(), nbh.end());
-      nbh.erase(unique(nbh.begin(), nbh.end()), nbh.end());
-    }
-  }
-
-  vector<int> parent; 
-  int root(int v) { // union-find data structure
-    if (parent[v] == v || parent[v] == -1) return v;
-    return parent[v] = root(parent[v]);
-  }
-  void normalize(vector<int> &S) {
-    for (auto &v: S) 
-      v = root(v);
-    sort(S.begin(), S.end());
-    S.erase(unique(S.begin(), S.end()), S.end());
-  }
-  vector<int> neighbor(int u) {
-    vector<int> nbh;
-    normalize(adj[u]);
-    for (auto v: adj[u]) {
-      if (parent[v] == v) {
-        nbh.push_back(v);
-      } else {
-        normalize(adj[v]);
-        for (auto w: adj[v]) {
-          if (parent[w] == w) {
-            nbh.push_back(w);
-          }
+    int n;
+    vector<vector<int>> adj;
+    void make_graph() {
+        n = 0;
+        for (auto e: edges) 
+            n = max(n, max(e.fst, e.snd)+1);
+        adj.resize(n);
+        for (auto e: edges) {
+            adj[e.fst].push_back(e.snd);
+            adj[e.snd].push_back(e.fst);
         }
-      }
+        for (auto &nbh: adj) {
+            sort(nbh.begin(), nbh.end());
+            nbh.erase(unique(nbh.begin(), nbh.end()), nbh.end());
+        }
     }
-    normalize(nbh);
-    return nbh;
-  }
-  void contract(int u) {
-    vector<int> live, dead;
-    for (auto v: adj[u]) {
-      if (parent[v] == v) live.push_back(v);
-      else                dead.push_back(v);
-    }
-    parent[u] = -1;
-    adj[u].swap(live);
-    for (auto v: dead) {
-      normalize(adj[v]);
-      adj[u].insert(adj[u].end(), adj[v].begin(), adj[v].end());
-      adj[v].clear();
-      parent[v] = u;
-    }
-  }
 
-  int solve() {
-    typedef pair<int, int> node; // (deg, vertex)
-    int tree_width = 0;
-    parent.resize(n);
-    priority_queue<node, vector<node>, greater<node>> Q;
-    for (int u = 0; u < n; ++u) {
-      parent[u] = u;
-      Q.push(node(adj[u].size(), u));
+    vector<int> parent; 
+    int root(int v) { // union-find data structure
+        if (parent[v] == v || parent[v] == -1) return v;
+        return parent[v] = root(parent[v]);
     }
-    while (!Q.empty()) {
-      int deg = Q.top().fst; 
-      int u = Q.top().snd;
-      Q.pop();
+    void normalize(vector<int> &S) {
+        for (auto &v: S) 
+            v = root(v);
+        sort(S.begin(), S.end());
+        S.erase(unique(S.begin(), S.end()), S.end());
+    }
+    vector<int> neighbor(int u) {
+        vector<int> nbh;
+        normalize(adj[u]);
+        for (auto v: adj[u]) {
+            if (parent[v] == v) {
+                nbh.push_back(v);
+            } else {
+                normalize(adj[v]);
+                for (auto w: adj[v]) {
+                    if (parent[w] == w) {
+                        nbh.push_back(w);
+                    }
+                }
+            }
+        }
+        normalize(nbh);
+        return nbh;
+    }
+    void contract(int u) {
+        vector<int> live, dead;
+        for (auto v: adj[u]) {
+            if (parent[v] == v) live.push_back(v);
+            else                dead.push_back(v);
+        }
+        parent[u] = -1;
+        adj[u].swap(live);
+        for (auto v: dead) {
+            normalize(adj[v]);
+            adj[u].insert(adj[u].end(), adj[v].begin(), adj[v].end());
+            adj[v].clear();
+            parent[v] = u;
+        }
+    }
 
-      vector<int> nbh = neighbor(u);
-      if (nbh.size() > deg) {
-        Q.push({nbh.size(), u});
-        continue;
-      }
-      tree_width = max(tree_width, nbh.size());
-      vector<int> intersect;
-      set_intersection(bags.back().begin(), bags.back(),end(),
-                       nhb.begin(), nbh.end(), intersect);
-      if (intersect.size() != nbh.size())
-        bags.push_back(nbh);
-      contract(u);
+    int solve() {
+        typedef pair<int, int> node; // (deg, vertex)
+        int tree_width = 0;
+        parent.resize(n);
+        priority_queue<node, vector<node>, greater<node>> Q;
+        for (int u = 0; u < n; ++u) {
+            parent[u] = u;
+            Q.push(node(adj[u].size(), u));
+        }
+        while (!Q.empty()) {
+            int deg = Q.top().fst; 
+            int u = Q.top().snd;
+            Q.pop();
+
+            vector<int> nbh = neighbor(u);
+            if (nbh.size() > deg) {
+                Q.push({nbh.size(), u});
+                continue;
+            }
+            tree_width = max(tree_width, nbh.size());
+            vector<int> intersect;
+            set_intersection(bags.back().begin(), bags.back(),end(),
+                                             nhb.begin(), nbh.end(), intersect);
+            if (intersect.size() != nbh.size())
+                bags.push_back(nbh);
+            contract(u);
+        }
+        return tree_width;
     }
-    return tree_width;
-  }
 };
 
 
 graph g;
 void read_edges(char *file) {
-  FILE *fp = fopen(file, "r");
-  vector< pair<int, int> > edge;
-  for (char buf[256]; fgets(buf, 256, fp); ) {
-    int u, v;
-    sscanf(buf, "%d %d", &u, &v);
-    g.add_edge(u, v);
-  }
-  g.make_graph();
+    FILE *fp = fopen(file, "r");
+    vector< pair<int, int> > edge;
+    for (char buf[256]; fgets(buf, 256, fp); ) {
+        int u, v;
+        sscanf(buf, "%d %d", &u, &v);
+        g.add_edge(u, v);
+    }
+    g.make_graph();
 }
 
 int main(int argc, char *argv[]) {
-  read_edges(argv[1]);
-  g.solve();
+    read_edges(argv[1]);
+    g.solve();
 }

@@ -33,46 +33,46 @@ using namespace std;
 #define all(c) ((c).begin()), ((c).end())
 
 struct sunday {
-  int m;
-  const char *p;
-  vector<int> skip;
-  sunday(const char *p) : p(p), m(strlen(p)) {
-    skip.assign(0x100, m+1);
-    for (int i = 0; i < m; ++i)
-      skip[p[i]] = m - i;
-  }
-  vector<int> match(const char s[]) {
-    int n = strlen(s);
-    vector<int> occur;
-    for (int i = 0; i <= n - m; ) {
-      if (memcmp(p, s + i, m) == 0) {
-        /* match at s[i, ..., i+m-1] */
-        occur.push_back(i);
-      }
-      i += skip[s[i + m]];
+    int m;
+    const char *p;
+    vector<int> skip;
+    sunday(const char *p) : p(p), m(strlen(p)) {
+        skip.assign(0x100, m+1);
+        for (int i = 0; i < m; ++i)
+            skip[p[i]] = m - i;
     }
-    return occur;
-  }
+    vector<int> match(const char s[]) {
+        int n = strlen(s);
+        vector<int> occur;
+        for (int i = 0; i <= n - m; ) {
+            if (memcmp(p, s + i, m) == 0) {
+                /* match at s[i, ..., i+m-1] */
+                occur.push_back(i);
+            }
+            i += skip[s[i + m]];
+        }
+        return occur;
+    }
 };
 
 int main() {
-  int ncase; scanf("%d", &ncase);
-  for (int icase = 0; icase < ncase; ++icase) {
-    if (icase > 0) printf("\n");
-    char s[1000010], p[1000010];
-    scanf("%s %s", s, p);
-    sunday M(p);
-    auto v = M.match(s);
-    if (v.empty()) {
-      printf("Not Found\n");
-    } else {
-      printf("%d\n", v.size());
-      for (int i = 0; i < v.size(); ++i) {
-        if (i > 0) printf(" ");
-        printf("%d", v[i]+1);
-      }
-      printf("\n");
+    int ncase; scanf("%d", &ncase);
+    for (int icase = 0; icase < ncase; ++icase) {
+        if (icase > 0) printf("\n");
+        char s[1000010], p[1000010];
+        scanf("%s %s", s, p);
+        sunday M(p);
+        auto v = M.match(s);
+        if (v.empty()) {
+            printf("Not Found\n");
+        } else {
+            printf("%d\n", v.size());
+            for (int i = 0; i < v.size(); ++i) {
+                if (i > 0) printf(" ");
+                printf("%d", v[i]+1);
+            }
+            printf("\n");
+        }
     }
-  }
 }
 

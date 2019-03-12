@@ -41,40 +41,40 @@ using namespace std;
 typedef long long ll;
 
 vector<int> unhash_perm(ll r, int n) {
-  vector<int> x(n);
-  iota(all(x), 0);
-  for (; n > 0; --n) {
-    swap(x[n-1], x[r % n]);
-    r /= n;
-  }
-  return x;
+    vector<int> x(n);
+    iota(all(x), 0);
+    for (; n > 0; --n) {
+        swap(x[n-1], x[r % n]);
+        r /= n;
+    }
+    return x;
 }
 ll hash_perm(vector<int> x) {
-  int n = x.size();
-  vector<int> y(n);
-  for (int i = 0; i < n; ++i) y[x[i]] = i;
-  ll c = 0, fac = 1;
-  for (; n > 1; --n) {
-    c += fac * x[n-1]; fac *= n;
-    swap(x[n-1], x[y[n-1]]);
-    swap(y[n-1], y[x[y[n-1]]]);
-  }
-  return c;
+    int n = x.size();
+    vector<int> y(n);
+    for (int i = 0; i < n; ++i) y[x[i]] = i;
+    ll c = 0, fac = 1;
+    for (; n > 1; --n) {
+        c += fac * x[n-1]; fac *= n;
+        swap(x[n-1], x[y[n-1]]);
+        swap(y[n-1], y[x[y[n-1]]]);
+    }
+    return c;
 }
 
 int main() {
-  int n = 9;
-  vector<int> x(n);
-  iota(all(x), 0);
-  do {
-    ll r = hash_perm(x);
-    cout << r << ": ";
-    auto a = unhash_perm(r, n);
-    for (int i = 0; i < n; ++i) {
-      cout << a[i] << " ";
-      if (a[i] != x[i]) exit(-1);
-    }
-    cout << endl;
-  } while (next_permutation(all(x)));
-  return 0;
+    int n = 9;
+    vector<int> x(n);
+    iota(all(x), 0);
+    do {
+        ll r = hash_perm(x);
+        cout << r << ": ";
+        auto a = unhash_perm(r, n);
+        for (int i = 0; i < n; ++i) {
+            cout << a[i] << " ";
+            if (a[i] != x[i]) exit(-1);
+        }
+        cout << endl;
+    } while (next_permutation(all(x)));
+    return 0;
 }

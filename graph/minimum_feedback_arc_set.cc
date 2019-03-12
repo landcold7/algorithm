@@ -42,72 +42,72 @@ using namespace std;
 
 template <class T>
 struct graph {
-  struct edge {
-    int src, dst;
-    T weight;
-  };
-  int n;
-  vector<vector<edge>> adj;
-  T inf;
-  graph(int n) : n(n), adj(n), inf(0) { }
-  void add_edge(int src, int dst, T weight) {
-    adj[src].push_back({src, dst, weight});
-    inf += e.weight;
-  }
-
-  T min_feedback_arc_set() {
-    vector<T> f(1<<n, inf);
-    f[0] = 0;
-    for (int S = 0; S < (1<<n); ++S) {
-      for (int u = 0; u < n; ++u) {
-        if (S & (1<<u)) continue;
-        T w = 0;
-        for (edge e: adj[u]) 
-          if (S & (1<<e.dst)) 
-            w += e.weight;
-        f[S|(1<<u)] = min(f[S|(1<<u)], f[S] + w);
-      }
+    struct edge {
+        int src, dst;
+        T weight;
+    };
+    int n;
+    vector<vector<edge>> adj;
+    T inf;
+    graph(int n) : n(n), adj(n), inf(0) { }
+    void add_edge(int src, int dst, T weight) {
+        adj[src].push_back({src, dst, weight});
+        inf += e.weight;
     }
-    return f[(1<<n)-1];
-  }
+
+    T min_feedback_arc_set() {
+        vector<T> f(1<<n, inf);
+        f[0] = 0;
+        for (int S = 0; S < (1<<n); ++S) {
+            for (int u = 0; u < n; ++u) {
+                if (S & (1<<u)) continue;
+                T w = 0;
+                for (edge e: adj[u]) 
+                    if (S & (1<<e.dst)) 
+                        w += e.weight;
+                f[S|(1<<u)] = min(f[S|(1<<u)], f[S] + w);
+            }
+        }
+        return f[(1<<n)-1];
+    }
 
 
-  // for verification
-  T min_feedback_arc_set_naive() {
-    T opt = inf;
-    vector<int> pi(n); iota(all(pi), 0);
-    do {
-      T ans = 0;
-      for (int u = 0; u < n; ++u)
-        for (edge e: adj[u]) 
-          if (pi[e.src] < pi[e.dst]) 
-            ans += e.weight;
-      opt = min(opt, ans);
-    } while (next_permutation(all(pi)));
-    return opt;
-  }
+    // for verification
+    T min_feedback_arc_set_naive() {
+        T opt = inf;
+        vector<int> pi(n); iota(all(pi), 0);
+        do {
+            T ans = 0;
+            for (int u = 0; u < n; ++u)
+                for (edge e: adj[u]) 
+                    if (pi[e.src] < pi[e.dst]) 
+                        ans += e.weight;
+            opt = min(opt, ans);
+        } while (next_permutation(all(pi)));
+        return opt;
+    }
 };
 
 int main() {
-  for (int seed = 0; seed < 1000; ++seed) {
-    srand(seed);
-    int n = 7;
-    graph<int> g(n);
-    for (int i = 0; i < n; ++i) {
-      for (int j = 0; j < n; ++j) {
-        if (i == j) continue;
-        int w = rand() % 10;
-        g.add_edge(i, j, w);
+    for (int seed = 0; seed < 1000; ++seed) {
+        srand(seed);
+        int n = 7;
+        graph<int> g(n);
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (i == j) continue;
+                int w = rand() % 10;
+                g.add_edge(i, j, w);
 //        cout << i << " " << j << " " << w << endl;
-      }
+            }
+        }
+        int a = g.min_feedback_arc_set();
+        int b = g.min_feedback_arc_set_naive();
+        if (a != b) {
+            cout << seed << endl;
+            cout << "DP = " << a << endl;
+            cout << "naive = " << b << endl;
+            break;
+        }
     }
-    int a = g.min_feedback_arc_set();
-    int b = g.min_feedback_arc_set_naive();
-    if (a != b) {
-      cout << seed << endl;
-      cout << "DP = " << a << endl;
-      cout << "naive = " << b << endl;
-      break;
-    }
-  }
 }

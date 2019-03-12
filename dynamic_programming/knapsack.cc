@@ -43,12 +43,12 @@ using namespace std;
 // F[a] := maximum profit for weight >= a
 //
 int knapsackW(vector<int> p, vector<int> w, int c) {
-  int n = w.size();
-  vector<int> F(c+1);
-  for (int i = 0; i < n; ++i)
-    for (int a = c; a >= w[i]; --a)
-      F[a] = max(F[a], F[a-w[i]] + p[i]);
-  return F[c];
+    int n = w.size();
+    vector<int> F(c+1);
+    for (int i = 0; i < n; ++i)
+        for (int a = c; a >= w[i]; --a)
+            F[a] = max(F[a], F[a-w[i]] + p[i]);
+    return F[c];
 }
 
 // Profit DP
@@ -57,21 +57,21 @@ int knapsackW(vector<int> p, vector<int> w, int c) {
 // F[a] := minimum weight for profit a
 //
 int knapsackP(vector<int> p, vector<int> w, int c) {
-  int n = p.size(), P = accumulate(all(p), 0);
-  vector<int> F(P+1, c+1); F[0] = 0;
-  for (int i = 0; i < n; ++i)
-    for (int a = P; a >= p[i]; --a)
-      F[a] = min(F[a], F[a-p[i]] + w[i]);
-  for (int a = P; a >= 0; --a)
-    if (F[a] <= c) return a;
+    int n = p.size(), P = accumulate(all(p), 0);
+    vector<int> F(P+1, c+1); F[0] = 0;
+    for (int i = 0; i < n; ++i)
+        for (int a = P; a >= p[i]; --a)
+            F[a] = min(F[a], F[a-p[i]] + w[i]);
+    for (int a = P; a >= 0; --a)
+        if (F[a] <= c) return a;
 }
 
 
 int main() {
-  vector<int> p = {3,1,4,1,5,9};
-  vector<int> w = {2,6,5,3,5,8};
-  int c = 10;
+    vector<int> p = {3,1,4,1,5,9};
+    vector<int> w = {2,6,5,3,5,8};
+    int c = 10;
 
-  cout << knapsackW(p, w, c) << endl;
-  cout << knapsackP(p, w, c) << endl;
+    cout << knapsackW(p, w, c) << endl;
+    cout << knapsackP(p, w, c) << endl;
 }

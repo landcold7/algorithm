@@ -38,13 +38,13 @@ using namespace std;
 #define TEST(s) if (!(s)) { cout << __LINE__ << " " << #s << endl; exit(-1); }
 
 struct Graph {
-  int n;
-  vector<vector<int>> adj;
-  Graph(int n) : n(n), adj(n) { }
-  void addEdge(int u, int v) {
-    adj[u].push_back(v);
-    adj[v].push_back(u);
-  }
+    int n;
+    vector<vector<int>> adj;
+    Graph(int n) : n(n), adj(n) { }
+    void addEdge(int u, int v) {
+        adj[u].push_back(v);
+        adj[v].push_back(u);
+    }
 };
 
 //
@@ -55,79 +55,79 @@ struct Graph {
 //   otherwise, index[u] = k
 //
 struct BiconnectedComponents : Graph {
-  vector<int> is_articulation, index;
-  vector<vector<int>> block;
+    vector<int> is_articulation, index;
+    vector<vector<int>> block;
 
-  BiconnectedComponents(Graph g) : Graph(0) {
-    vector<int> low(g.n), num(g.n), cur(g.n), par(g.n, -1), path;
-    is_articulation.resize(g.n);
-    for (int s = 0; s < g.n; ++s) {
-      if (num[s]) continue;
-      int time = 0;
-      vector<int> stack = {s};
-      while (!stack.empty()) {
-        int u = stack.back();
-        if (cur[u] == 0) {
-          low[u] = num[u] = ++time;
-          path.push_back(u);
-        }
-        if (cur[u] == g.adj[u].size()) {
-          stack.pop_back();
-        } else if (cur[u] >= 0) {
-          int v = g.adj[u][cur[u]++];
-          if (num[v] == 0) {
-            cur[u] = ~cur[u];
-            stack.push_back(v);
-          } else if (v != par[u]) {
-            low[u] = min(low[u], num[v]);
-          }
-        } else {
-          cur[u] = ~cur[u];
-          int v = g.adj[u][cur[u]-1];
-          low[u] = min(low[u], low[v]);
-          if (num[u] <= low[v]) {
-            is_articulation[u] = (num[u] > 1 || num[v] > 2);
-            block.push_back({u});
-            while (block.back().back() != v) {
-              block.back().push_back(path.back());
-              path.pop_back();
+    BiconnectedComponents(Graph g) : Graph(0) {
+        vector<int> low(g.n), num(g.n), cur(g.n), par(g.n, -1), path;
+        is_articulation.resize(g.n);
+        for (int s = 0; s < g.n; ++s) {
+            if (num[s]) continue;
+            int time = 0;
+            vector<int> stack = {s};
+            while (!stack.empty()) {
+                int u = stack.back();
+                if (cur[u] == 0) {
+                    low[u] = num[u] = ++time;
+                    path.push_back(u);
+                }
+                if (cur[u] == g.adj[u].size()) {
+                    stack.pop_back();
+                } else if (cur[u] >= 0) {
+                    int v = g.adj[u][cur[u]++];
+                    if (num[v] == 0) {
+                        cur[u] = ~cur[u];
+                        stack.push_back(v);
+                    } else if (v != par[u]) {
+                        low[u] = min(low[u], num[v]);
+                    }
+                } else {
+                    cur[u] = ~cur[u];
+                    int v = g.adj[u][cur[u]-1];
+                    low[u] = min(low[u], low[v]);
+                    if (num[u] <= low[v]) {
+                        is_articulation[u] = (num[u] > 1 || num[v] > 2);
+                        block.push_back({u});
+                        while (block.back().back() != v) {
+                            block.back().push_back(path.back());
+                            path.pop_back();
+                        }
+                    }
+                }
             }
-          }
         }
-      }
+        index.resize(g.n); // make a block tree
+        n = block.size();
+        for (int u = 0; u < g.n; ++u) 
+            if (is_articulation[u]) index[u] = n++;
+        adj.resize(n);
+        for (int k = 0; k < block.size(); ++k) {
+            for (int u: block[k]) {
+                if (!is_articulation[u]) index[u] = k;
+                else addEdge(k, index[u]);
+            }
+        }
     }
-    index.resize(g.n); // make a block tree
-    n = block.size();
-    for (int u = 0; u < g.n; ++u) 
-      if (is_articulation[u]) index[u] = n++;
-    adj.resize(n);
-    for (int k = 0; k < block.size(); ++k) {
-      for (int u: block[k]) {
-        if (!is_articulation[u]) index[u] = k;
-        else addEdge(k, index[u]);
-      }
-    }
-  }
 };
 
 void AOJ_GRL_3_A() {
-  int n, m; 
-  scanf("%d %d", &n, &m);
-  Graph g(n);
-  for (int i = 0; i < m; ++i) {
-    int u, v; scanf("%d %d", &u, &v);
-    g.addEdge(u, v);
-  }
-  BiconnectedComponents bcc(g);
-  for (int u = 0; u < g.n; ++u) 
-    if (bcc.is_articulation[u]) cout << u << endl;
+    int n, m; 
+    scanf("%d %d", &n, &m);
+    Graph g(n);
+    for (int i = 0; i < m; ++i) {
+        int u, v; scanf("%d %d", &u, &v);
+        g.addEdge(u, v);
+    }
+    BiconnectedComponents bcc(g);
+    for (int u = 0; u < g.n; ++u) 
+        if (bcc.is_articulation[u]) cout << u << endl;
 }
 
 int main() {
-  AOJ_GRL_3_A();
-  //SPOJ_SUBMERGE();
-  //test();
-  /*
-  */
+    AOJ_GRL_3_A();
+    //SPOJ_SUBMERGE();
+    //test();
+    /*
+    */
 }
 

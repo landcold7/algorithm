@@ -23,15 +23,15 @@ using namespace std;
 
 using Real = double;
 struct DualNumber {
-  Real a, b; // a + epsilon b
-  DualNumber(Real a = 0, Real b = 0) : a(a), b(b) { }
-  DualNumber &operator+=(DualNumber x) { b+=x.b; a+=x.a; return *this; }
-  DualNumber &operator*=(DualNumber x) { b=b*x.a+a*x.b; a*=x.a; return *this; }
-  DualNumber operator+() const { return *this; }
-  DualNumber operator-() const { return {-a, -b}; }
-  DualNumber inv() const { return {1.0/a, -b/(a*a)}; }
-  DualNumber &operator-=(DualNumber x) { return *this += -x; }
-  DualNumber &operator/=(DualNumber x) { return *this *= x.inv(); }
+    Real a, b; // a + epsilon b
+    DualNumber(Real a = 0, Real b = 0) : a(a), b(b) { }
+    DualNumber &operator+=(DualNumber x) { b+=x.b; a+=x.a; return *this; }
+    DualNumber &operator*=(DualNumber x) { b=b*x.a+a*x.b; a*=x.a; return *this; }
+    DualNumber operator+() const { return *this; }
+    DualNumber operator-() const { return {-a, -b}; }
+    DualNumber inv() const { return {1.0/a, -b/(a*a)}; }
+    DualNumber &operator-=(DualNumber x) { return *this += -x; }
+    DualNumber &operator/=(DualNumber x) { return *this *= x.inv(); }
 };
 DualNumber operator+(DualNumber x, DualNumber y) { return x += y; }
 DualNumber operator-(DualNumber x, DualNumber y) { return x -= y; }
@@ -48,11 +48,11 @@ DualNumber tan(DualNumber x) { return sin(x)/cos(x); }
 DualNumber log(DualNumber x) { return {log(x.a),x.b/x.a}; }
 
 int main() {
-  DualNumber x = 3, y = 4;
-  auto f = [&](DualNumber x) {
-    return sin(x*x) + cos(exp(x)) + tan(x);
-  };
-  x.b = 1; // set infinitesimal part
-  cout << f(x).b << endl;
+    DualNumber x = 3, y = 4;
+    auto f = [&](DualNumber x) {
+        return sin(x*x) + cos(exp(x)) + tan(x);
+    };
+    x.b = 1; // set infinitesimal part
+    cout << f(x).b << endl;
 }
 

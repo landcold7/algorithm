@@ -36,37 +36,37 @@ using namespace std;
 
 template <class F>
 double runge_kutta(F f, double t, double tend, double x) {
-  const double EPS = 1e-5;
-  for (double h = EPS; t < tend; ) {
-    if (t + h >= tend) h = tend - t;
-    double k1 = h * f(t      , x       );
-    double k2 = h * f(t + h/2, x + k1/2);
-    double k3 = h * f(t + h/2, x + k2/2);
-    double k4 = h * f(t + h  , x + k3  );
-    x += (k1 + 2 * k2 + 2 * k3 + k4) / 6;
-    t += h; // (t, x)
-  }
-  return x;
+    const double EPS = 1e-5;
+    for (double h = EPS; t < tend; ) {
+        if (t + h >= tend) h = tend - t;
+        double k1 = h * f(t      , x       );
+        double k2 = h * f(t + h/2, x + k1/2);
+        double k3 = h * f(t + h/2, x + k2/2);
+        double k4 = h * f(t + h  , x + k3  );
+        x += (k1 + 2 * k2 + 2 * k3 + k4) / 6;
+        t += h; // (t, x)
+    }
+    return x;
 }
 
 // for comparison
 template <class F>
 double euler(F f, double t, double tend, double x) {
-  const double EPS = 1e-5;
-  for (double h = EPS; t < tend; ) {
-    if (t + h >= tend) h = tend - t;
-    x += h * f(t, x);
-    t += h;
-  }
-  return x;
+    const double EPS = 1e-5;
+    for (double h = EPS; t < tend; ) {
+        if (t + h >= tend) h = tend - t;
+        x += h * f(t, x);
+        t += h;
+    }
+    return x;
 }
 
 int main() {
-  auto f = [](double t, double x) {
-    return t * x;
-  };
-  printf("%f\n", runge_kutta(f, 0, 1, 1));
-  printf("%f\n", euler(f, 0, 1, 1));
-  printf("%f\n", exp(1.0/2.0));
+    auto f = [](double t, double x) {
+        return t * x;
+    };
+    printf("%f\n", runge_kutta(f, 0, 1, 1));
+    printf("%f\n", euler(f, 0, 1, 1));
+    printf("%f\n", exp(1.0/2.0));
 }
 

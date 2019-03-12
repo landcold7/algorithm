@@ -39,69 +39,69 @@ using namespace std;
 #define all(c) ((c).begin()), ((c).end())
 
 struct bradley_terry {
-  int n;
-  vector<double> w;
-  vector<vector<int>> a;
-  bradley_terry(int n) : n(n), w(n,1) { regularize(); }
+    int n;
+    vector<double> w;
+    vector<vector<int>> a;
+    bradley_terry(int n) : n(n), w(n,1) { regularize(); }
 
-  // reguralization avoids no-match pairs
-  void regularize() {
-    a.assign(n, vector<int>(n, 1));
-    for (int i = 0; i < n; ++i)
-      a[i][i] = n-1;
-  }
-
-  // win beats lose num times
-  void add_match(int win, int lose, int num = 1) {
-    a[win][lose] += num;
-    a[win][win]  += num;
-  }
-
-  // estimate the strengths
-  void learning() {
-    for (int iter = 0; iter < 100; ++iter) {
-      double norm = 0;
-      vector<double> z(n);
-      for (int i = 0; i < n; ++i) {
-        double sum = 0;
-        for (int j = 0; j < n; ++j) 
-          if (i != j) sum += (a[i][j] + a[j][i]) / (w[i] + w[j]);
-        z[i] = a[i][i] / sum;
-        norm += z[i];
-      }
-      double err = 0;
-      for (int i = 0; i < n; ++i)  {
-        err += abs(w[i] - z[i] / norm);
-        w[i] = z[i] / norm;
-      }
-      if (err < 1e-6) break;
+    // reguralization avoids no-match pairs
+    void regularize() {
+        a.assign(n, vector<int>(n, 1));
+        for (int i = 0; i < n; ++i)
+            a[i][i] = n-1;
     }
-  }
+
+    // win beats lose num times
+    void add_match(int win, int lose, int num = 1) {
+        a[win][lose] += num;
+        a[win][win]  += num;
+    }
+
+    // estimate the strengths
+    void learning() {
+        for (int iter = 0; iter < 100; ++iter) {
+            double norm = 0;
+            vector<double> z(n);
+            for (int i = 0; i < n; ++i) {
+                double sum = 0;
+                for (int j = 0; j < n; ++j) 
+                    if (i != j) sum += (a[i][j] + a[j][i]) / (w[i] + w[j]);
+                z[i] = a[i][i] / sum;
+                norm += z[i];
+            }
+            double err = 0;
+            for (int i = 0; i < n; ++i)  {
+                err += abs(w[i] - z[i] / norm);
+                w[i] = z[i] / norm;
+            }
+            if (err < 1e-6) break;
+        }
+    }
 
 };
 
 
 // 2014, NPB (Nippon Professional Baseball) Central League
 int data[6][6] = {
-  { 0, 13, 13, 16, 11, 13}, // Giants
-  {11,  0, 14, 12, 16, 13}, // Tigers
-  {10, 10,  0, 14, 15, 16}, // Carp
-  { 8, 11, 10,  0, 14, 11}, // Dragons
-  {13,  8,  8,  9,  0, 16}, // BayStars
-  {11, 11,  8, 12,  8,  0}, // Swallows
+    { 0, 13, 13, 16, 11, 13}, // Giants
+    {11,  0, 14, 12, 16, 13}, // Tigers
+    {10, 10,  0, 14, 15, 16}, // Carp
+    { 8, 11, 10,  0, 14, 11}, // Dragons
+    {13,  8,  8,  9,  0, 16}, // BayStars
+    {11, 11,  8, 12,  8,  0}, // Swallows
 };
 
 int main() {
-  int n = 6;
-  bradley_terry BT(n);
-  for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < n; ++j) {
-      BT.add_match(i, j, data[i][j]);
+    int n = 6;
+    bradley_terry BT(n);
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            BT.add_match(i, j, data[i][j]);
+        }
     }
-  }
-  BT.learning();
+    BT.learning();
 
-  for (int i = 0; i < n; ++i) {
-    cout << BT.w[i] << endl;
-  }
+    for (int i = 0; i < n; ++i) {
+        cout << BT.w[i] << endl;
+    }
 }

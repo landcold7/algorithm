@@ -32,37 +32,37 @@ using namespace std;
 
 template <class T>
 struct unweighted_interval_scheduling {
-  struct interval { T b, e; };
-  vector<interval> is;
-  void add_interval(T b, T e) {
-    is.push_back({b, e});
-  }
-  T max_scheduling() {
-    sort(all(is), [](interval x, interval y) {
-      return x.e < y.e;
-    });
-    int score = 0;
-    T sweep = is[0].b - 1;
-    for (int i = 0; i < is.size(); ++i) {
-      if (is[i].b >= sweep) {
-        ++score;
-        sweep = is[i].e;
-      }
+    struct interval { T b, e; };
+    vector<interval> is;
+    void add_interval(T b, T e) {
+        is.push_back({b, e});
     }
-    return score;
-  }
+    T max_scheduling() {
+        sort(all(is), [](interval x, interval y) {
+            return x.e < y.e;
+        });
+        int score = 0;
+        T sweep = is[0].b - 1;
+        for (int i = 0; i < is.size(); ++i) {
+            if (is[i].b >= sweep) {
+                ++score;
+                sweep = is[i].e;
+            }
+        }
+        return score;
+    }
 };
 
 int main() {
-  int ncase; scanf("%d", &ncase);
-  for (int icase = 0; icase < ncase; ++icase) {
-    int n; scanf("%d", &n);
-    unweighted_interval_scheduling<int> is;
-    for (int i = 0; i < n; ++i) {
-      int u, v;
-      scanf("%d %d", &u, &v);
-      is.add_interval(u, v);
+    int ncase; scanf("%d", &ncase);
+    for (int icase = 0; icase < ncase; ++icase) {
+        int n; scanf("%d", &n);
+        unweighted_interval_scheduling<int> is;
+        for (int i = 0; i < n; ++i) {
+            int u, v;
+            scanf("%d %d", &u, &v);
+            is.add_interval(u, v);
+        }
+        printf("%d\n", is.max_scheduling());
     }
-    printf("%d\n", is.max_scheduling());
-  }
 }

@@ -33,33 +33,33 @@ using namespace std;
 #define all(c) ((c).begin()), ((c).end())
 
 struct graph {
-  int n;
-  vector<vector<int>> adj;
-  graph(int n) : n(n), adj(n) { }
-  void add_edge(int src, int dst) {
-    adj[src].push_back(dst);
-    adj[dst].push_back(src);
-  }
+    int n;
+    vector<vector<int>> adj;
+    graph(int n) : n(n), adj(n) { }
+    void add_edge(int src, int dst) {
+        adj[src].push_back(dst);
+        adj[dst].push_back(src);
+    }
 };
 bool is_claw_free(graph g) {
-  int threshold = 0;
-  vector<unordered_set<int>> N(g.n);
-  for (int s = 0; s < g.n; ++s) {
-    threshold += g.adj[s].size();
-    for (int v: g.adj[s]) N[s].insert(v);
-  }
-  threshold = 2 * sqrt(threshold);
-  for (int s = 0; s < g.n; ++s) {
-    vector<int> &nbh = g.adj[s];
-    if (nbh.size() > threshold) return false; // Turan's theorem
-    for (int i = 0; i < nbh.size(); ++i) 
-      for (int j = i+1; j < nbh.size(); ++j) 
-        if (!N[nbh[j]].count(nbh[i])) 
-          for (int k = i+2; k < nbh.size(); ++k) 
-            if (!N[nbh[k]].count(nbh[i]) && !N[nbh[k]].count(nbh[j]))
-              return false;
-  }
-  return true;
+    int threshold = 0;
+    vector<unordered_set<int>> N(g.n);
+    for (int s = 0; s < g.n; ++s) {
+        threshold += g.adj[s].size();
+        for (int v: g.adj[s]) N[s].insert(v);
+    }
+    threshold = 2 * sqrt(threshold);
+    for (int s = 0; s < g.n; ++s) {
+        vector<int> &nbh = g.adj[s];
+        if (nbh.size() > threshold) return false; // Turan's theorem
+        for (int i = 0; i < nbh.size(); ++i) 
+            for (int j = i+1; j < nbh.size(); ++j) 
+                if (!N[nbh[j]].count(nbh[i])) 
+                    for (int k = i+2; k < nbh.size(); ++k) 
+                        if (!N[nbh[k]].count(nbh[i]) && !N[nbh[k]].count(nbh[j]))
+                            return false;
+    }
+    return true;
 }
 
 int main() {

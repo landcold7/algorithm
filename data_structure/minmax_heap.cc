@@ -14,21 +14,21 @@
 
 template <class T, class L = less<T>, class G = greater<T>>
 struct minmax_heap {
-  priority_queue<T, vector<T>, G> minh, minp;
-  priority_queue<T, vector<T>, L> maxh, maxp;
-  void normalize() {
-    while (!minp.empty() && minp.top() == minh.top()) {
-      minp.pop();
-      minh.pop();
+    priority_queue<T, vector<T>, G> minh, minp;
+    priority_queue<T, vector<T>, L> maxh, maxp;
+    void normalize() {
+        while (!minp.empty() && minp.top() == minh.top()) {
+            minp.pop();
+            minh.pop();
+        }
+        while (!maxp.empty() && maxp.top() == maxh.top()) {
+            maxp.pop();
+            maxh.pop();
+        }
     }
-    while (!maxp.empty() && maxp.top() == maxh.top()) {
-      maxp.pop();
-      maxh.pop();
-    }
-  }
-  void push(T x) { minh.push(x); maxh.push(x); }
-  T min() { normalize(); return minh.top(); }
-  T max() { normalize(); return maxh.top(); }
-  void pop_min() { normalize(); maxp.push(minh.top()); minh.pop(); }
-  void pop_max() { normalize(); minp.push(maxh.top()); maxh.pop(); }
+    void push(T x) { minh.push(x); maxh.push(x); }
+    T min() { normalize(); return minh.top(); }
+    T max() { normalize(); return maxh.top(); }
+    void pop_min() { normalize(); maxp.push(minh.top()); minh.pop(); }
+    void pop_max() { normalize(); minp.push(maxh.top()); maxh.pop(); }
 };
